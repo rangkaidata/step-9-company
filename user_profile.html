@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+	<head>
+		<title>User Profile</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="function.js"></script>
+	</head>
+<body>
+<h4 style='color:red'>App Step 9: company</h4>
+<h1 id="modul"></h1>
+<h2 id="metode"></h2>
+<p><a href="home.html">Kembali ke Menu</a></p>
+<h4 id="msg"></h4>
+<div id="btn"></div>
+<div id="app"></div>
+
+<script>
+	// step 5.1:
+	var login_blok=sessionStorage.getItem("login_blok"); 
+	var modul=document.getElementById("modul");
+	var metode=document.getElementById("metode");
+	var btn=document.getElementById("btn");
+	var msg=document.getElementById("msg");
+	var app=document.getElementById("app");
+	var data_login='';
+	var url=global_url+'login/';
+
+	// step 5.2:
+	function loginReadData(){
+		modul.innerHTML='User Profile';
+		metode.innerHTML='Read Data';
+		msg.innerHTML='';
+		btn.innerHTML='<button type="button" onclick="loginUpdateData()">Change</button>';
+		app.innerHTML='Please wait...';
+		let obj= {"login_blok":login_blok};		
+		loadXHR(url+"read.php",obj,loginReadDataShow);
+	}
+
+	// step 5.3:
+	function loginReadDataShow(paket){
+		data_login=paket;
+		var html;
+		if (paket.err==0){
+			html='<ul>'
+				+'<li><label>User Blok (ID)</label>: '+paket.data[0].user_blok+'</li>'
+				+'<li><label>User Name</label>: '+paket.data[0].user_name+'</li>'
+				+'<li><label>Full Name</label>: '+paket.data[0].user_fullname+'</li>'
+				+'<li><label>Email Address</label>: '+paket.data[0].email_address+'</li>'
+				+'<li><label>Mobile Number</label>: '+paket.data[0].mobile_number+'</li>'
+				+'<li><label>Quota</label>: '+paket.data[0].quota_tx+'</li>'
+				+'<li><label>Used</label>: '+paket.data[0].used_tx+'</li>'
+				+'</ul>';
+			app.innerHTML = html;	
+		}
+	}
+
+	// step 5.4:
+	function loginUpdateData(){
+		metode.innerHTML='Update Data';
+		var html;
+		var stark=data_login;
+		if (data_login.err==0){
+			html='<ul>'
+				+'<li><label>Full Name</label>: <input type="text" id="user_fullname" value="'+stark.data[0].user_fullname+'"></li>'
+				+'<li><label>Email Address</label>: <input type="text" id="email_address" value="'+stark.data[0].email_address+'"></li>'
+				+'<li><label>Mobile Number</label>: <input type="text" id="mobile_number" value="'+stark.data[0].mobile_number+'"></li>'
+				+'<li><label>Current Password</label>: <input type="password" id="old_password"></li>'
+				+'<li><label>New Password</label>: <input type="password" id="new_password"></li>'
+				+'<li><label>Retype Password</label>: <input type="password" id="retype_password"></li>'
+				+'</ul>';
+			app.innerHTML = html;	
+		}
+		
+		html='<button type="button" onclick="loginReadData()">Back</button>'
+			+'<button type="button" id="btn_save" onclick="loginUpdateExecute()">Update</button>';
+		btn.innerHTML=html;
+	}
+	
+	// step 5.5:
+	function loginUpdateExecute(){
+		var obj = {
+			"login_blok":login_blok,
+			"old_password":document.getElementById("old_password").value,
+			"new_password":document.getElementById("new_password").value,
+			"retype_password":document.getElementById("retype_password").value,
+			"user_fullname":document.getElementById("user_fullname").value,
+			"email_address":document.getElementById("email_address").value,
+			"mobile_number":document.getElementById("mobile_number").value
+		}
+		loadXHR(url+"update.php",obj,loginUpdateMessage); 
+	}
+
+	// step 5.6:
+	function loginUpdateMessage(paket){
+		if (paket.err===0){			
+			document.getElementById("btn_save").style.display="none";
+		}
+		msg.innerHTML=paket.msg;
+	}
+	
+	// step 5.7:
+	loginReadData();
+	
+</script>
+</body>
+</html> 
+
